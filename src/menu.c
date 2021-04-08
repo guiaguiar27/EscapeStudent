@@ -1,5 +1,5 @@
-#include "headers/menu.h"  
-#include "Backtracking.c" 
+#include "menu.h"  
+#include "Backtracking.h" 
 
 
 void menu (){
@@ -48,8 +48,10 @@ void montaLabirinto(FILE *entrada){
     // }    
     fclose(entrada);  
     
-    int *initialPosition = findPosition(matrizLab, linha, coluna); 
-    if(initStudent(matrizLab, linha, coluna,&qtdChave,initialPosition)) printf("Venceu!") ; 
+    MazePosition *initialPosition = findPosition(matrizLab, linha, coluna);  
+    //MazePosition *NextPosition = allocate_position(); 
+    int pre_status = False; 
+    initStudent(matrizLab, linha, coluna,&qtdChave,initialPosition,&pre_status); 
     
     // code end  
     //liberaLabirinto(matrizLab,linha);  //CORRIGIR****

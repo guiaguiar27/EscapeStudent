@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "menu.h": "c"
+        "menu.h": "c",
+        "backtracking.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

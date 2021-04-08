@@ -1,84 +1,99 @@
-#include <time.h>
-int *findPosition(int **maze, int line, int column){ 
+#include "Backtracking.h"
+MazePosition *findPosition(int **maze, int line, int column){ 
 
-    int *position = (int*)malloc(2*sizeof(int)); 
+    MazePosition *position = allocate_position(); 
      for (int i=0; i < line; i++){
          for (int j=0; j < column; j++){
             if(maze[i][j] == 0){ 
-                position[0] = i; 
-                position[1] = j; 
+                position->line = i; 
+                position->column = j; 
             }
          }
-     }  
-     return position;   
-}
-int initStudent(int **maze, int line, int column,int *keys, int *position){ 
-     
-      srand(time(NULL)); 
-     int i = 0, j = 0, aux_line , aux_column, choose;  
-     
-     printf("Line: %d - Column: %d\n",position[0], position[1]);
-   
-     if(position[0] == 0) return 1; // win  
+     }    
+     //position->ExploredFlag = True;
+     return position;    
+} 
+/*-----------------------------------------------------------------------------------------------*/
+MazePosition *allocate_position(){ 
+    MazePosition *Mz = (MazePosition*)malloc(sizeof(MazePosition)); 
+    return Mz; 
+} 
 
-     else if(maze[position[0]][position[1]] == 2){ 
-         // wall       
+/*-----------------------------------------------------------------------------------------------*/
 
-        // boundaries   
-        if(position[0] == line - 1 ||  
-           position[1] == column - 1 
-        ){ 
-            position[1] -= 1;  
-            position[0] +=1 ;     
-        } 
-        else if(position[0] == line - 1 ||  
-                position[1] == 0  
-        ){ 
-           position[1] += 1; 
-           position[0] +=1; 
-        } 
-            position[0] +=1; 
-        
-        // if(explored[position[0]][position[1]] == 2) 
-        
-        initStudent(maze,line,column,keys,position); 
-     
+int  initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int *status){ 
+     show_position(position->line, position->column); 
+     if(position->line == 0){ 
+         *status = Finished; 
+         printf("Win\n"); 
+         return True; 
+     }   
+
+    /*11011*/ 
+
+    // reflect about put this part inside a while loop, like the one another
+
+     for(int j = position->column ; j < column ; j++){ 
+         if(maze[position->line-1][j] == 0 || maze[position->line-1][j] == 1){ 
+              
+            position->line -= 1;   
+            position->column = j; 
+             // try to find the path here
+             *status = True; 
+             if(initStudent(maze,line,column,keys,position,status)) return True;  
+             else {  
+                 *status = False; 
+                 position->line +=1 ; 
+             } 
+         } 
+         if(maze[position->line-1][j] == 2){   
+            return False; 
+         } 
+         if(maze[position->line-1][j] == 3){ 
+             if(*keys>= 1) {  
+                position->line -= 1;   
+                position->column = j;   
+                *status = True; 
+                if(initStudent(maze,line,column,keys,position,status)) return True;  
+                else { 
+                    position->line +=1 ; 
+                }
+             } 
+             else return False;  
+             
+         }
      } 
-
-     else if(maze[position[0]][position[1]] == 3){ 
-        if(*keys >= 1){ 
-            choose = rand() % 2;  
-            if(choose == 0) 
-                position[choose] -=1 ;  
-            else 
-                position[choose] -=1 ;  
-            initStudent(maze,line,column,keys,position); 
-        } 
-        else{ 
-            position[0] +=1;  
-            if(position[0] == line - 1) position[1] += 1; 
-            if(position[1] == column - 1) position[1] -= 1;
-        initStudent(maze,line,column,keys,position); 
-        }   
-    }
-      
-
-     else if(maze[position[0]][position[1]] == 1 || maze[position[0]][position[1]] == 0 ){ 
-        
-        position[0] -=1 ;   
-        initStudent(maze,line,column,keys,position); 
+     while(*status == False){  
+         for(int j = position->column; j >= 0 ; j--){  
+            if(maze[position->line-1][j] == 0 || maze[position->line][j] == 1){ 
+             position->line -= 1;  
+             position->column = j;   
+             // try to find the path here
+             *status = True; 
+             if(initStudent(maze,line,column,keys,position,status)) return True; 
+             else{   
+                *status = False; 
+                position->line +=1 ; 
+             }  
+            } 
+             
+             
+         } 
+        //  if(*status == False) {   
+        //      position->line+=1;  
+        //      break; 
+        // implement the wall and the doors. 
      } 
-    
-    return 0; 
 
 } 
 
 
 
-/* 
-choose = rand() % 2;  
-        if(choose == 0) 
-            position[choose] +=1 ;  
-        else 
-            position[choose] +=1 ;   
-*/ 
+/*-----------------------------------------------------------------------------------------------*/
+void show_position(int line, int column){ 
+    printf("Line  |   Column\n");
+    printf("  %d       %d   \n",line, column); 
+    printf("-------------------\n");
+
+} 
+/*-----------------------------------------------------------------------------------------------*/
