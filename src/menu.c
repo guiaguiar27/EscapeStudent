@@ -1,10 +1,45 @@
-#include "headers/menu.h"  
-#include "Backtracking.c" 
+#include "headers\Backtracking.h"
+
 
 
 void menu (){
+    
+    char choice;
+    char file[30];
+    char extension[30] = ".txt";
+    //bool lFile = false;   
+    
+    do{
+        printf("\n--- STUDENT MAZZE RUNNER ---\n"); 
+        printf("\t Pick an option: \n");   
+        printf("\t 1 - Load new file. \n");
+        printf("\t 2 - Solve maze and show results. \n");
+        printf("\t\n Anything else to QUIT.  \n");
+        scanf("%c",&choice);
+
+        switch (choice)
+        {
+        case '1':            
+            printf("\t Please, input file name: \n");
+            scanf("%s",file);
+            strcat(file,extension);
+                                                        //printf("%s", file);
+            loadFile(file);
+            break;
+        
+        default:
+            break;
+        }
+        
+    }while (choice=='1' || choice=='2');
+
+   
+             
+}
+
+void loadFile (char *file){
     FILE *entrada;    
-    entrada = fopen("teste.txt","r");
+    entrada = fopen(file,"r");
 
         //Verifica se arquivo é valido
     if (entrada == NULL){
@@ -14,7 +49,6 @@ void menu (){
     else{
         printf("Arquivo valido.\n");
     }
-
     montaLabirinto(entrada);
              
 }
@@ -38,21 +72,18 @@ void montaLabirinto(FILE *entrada){
             for (int j=0; j < coluna; j++)
                 fscanf(entrada, "%d",&matrizLab[i][j]); // acesso com sintaxe mais simples
         }
-    }
-
-    // for (int i=0; i < linha; i++){
-    //     printf("\n");
-    //     for (int j=0; j < coluna; j++){
-    //         printf("%d",matrizLab[i][j]);        // acesso com sintaxe mais simples
-    //     }
-    // }    
-    fclose(entrada);  
+    }  
+     
     
     int *initialPosition = findPosition(matrizLab, linha, coluna); 
     if(initStudent(matrizLab, linha, coluna,&qtdChave,initialPosition)) printf("Venceu!") ; 
+
+    liberaLabirinto(matrizLab,linha);
+    
+    fclose(entrada); 
     
     // code end  
-    //liberaLabirinto(matrizLab,linha);  //CORRIGIR****
+    
 }
 
 void liberaLabirinto(int **matrizLab, int linha){     
