@@ -49,7 +49,7 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
          
          mark_position_solution(solution, position->line, position->column);  
 
-        // down up 
+        //go  down 
         if(verify_position(maze,position->line-1,position->column,keys)){ 
             #if DEBUG 
                 printf("Up\n"); 
@@ -58,7 +58,7 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
             *status = True;  
             if(initStudent(maze,line,column,keys,position,status,solution)) return True;  
         }    
-        // down up
+        // go up
         if(verify_position(maze,position->line+1, position->column,keys)){  
             if(position->line + 1 <= line){    
                 #if DEBUG
