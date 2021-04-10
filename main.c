@@ -1,5 +1,4 @@
-
-#include "src/menu.c"
+#include "src/headers/menu.h"
 int main(){   
       
     menu();

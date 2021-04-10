@@ -1,61 +1,82 @@
-#include "headers\Backtracking.h"
+#include "menu.h"
 
 
 
 void menu (){
     
-    char choice;
+    FILE *input;
+    int choice=0;
     char file[30];
-    char extension[30] = ".txt";
-    //bool lFile = false;   
+    char extension[10] = ".txt";
+    boolean loaded; 
+    loaded=F; 
+    int **matrizLab; 
     
     do{
+        system("cls"); 
         printf("\n--- STUDENT MAZZE RUNNER ---\n"); 
         printf("\t Pick an option: \n");   
         printf("\t 1 - Load new file. \n");
         printf("\t 2 - Solve maze and show results. \n");
         printf("\t\n Anything else to QUIT.  \n");
-        scanf("%c",&choice);
+        scanf("%d",&choice);
 
         switch (choice)
         {
-        case '1':            
-            printf("\t Please, input file name: \n");
+        case 1:
+            system("cls");            
+            printf("\n\t Please, input file name: \n");
             scanf("%s",file);
-            strcat(file,extension);
-                                                        //printf("%s", file);
-            loadFile(file);
+            strcat(file,extension);            
+            input = fopen(file,"r");
+            loadFile(file, input);
+            loaded = T;
+            printf("\n%d",loaded);
             break;
-        
+            
+
+        case 2:
+            system("cls");
+            printf("\n%d",loaded);
+            if (loaded){
+
+                //CODIGO BACKTRACKING
+
+                break;   
+            }
+            else{
+                printf("\n\t Please, first load a valid file \n");
+                printf(" Press anything to continue... \n");
+                system("pause");
+                break;
+            }
+           
+            
+
         default:
             break;
         }
         
-    }while (choice=='1' || choice=='2');
-
-   
+    }while (choice == 1 || choice==2);   
              
 }
 
-void loadFile (char *file){
-    FILE *entrada;    
-    entrada = fopen(file,"r");
+void loadFile (char *file, FILE *input){       
 
         //Verifica se arquivo é valido
-    if (entrada == NULL){
-        printf("Erro na abertura do arquivo.\n");
+    if (input == NULL){
+        printf("Cannot open requested file!\n");
         return;
     }
     else{
-        printf("Arquivo valido.\n");
+        printf("File Openned!\n");
     }
-    montaLabirinto(entrada);
+    montaLabirinto(input);
              
 }
 
-void montaLabirinto(FILE *entrada){
-    int linha, coluna, qtdChave;
-    int **matrizLab;        
+void montaLabirinto(FILE *entrada, int **matrizLab){ //adicionar parametros
+    int linha, coluna, qtdChave;           
         //Leitura dados labirinto
     fscanf(entrada,"%d %d %d",&linha,&coluna,&qtdChave);
 
@@ -75,14 +96,12 @@ void montaLabirinto(FILE *entrada){
     }  
      
     
-    int *initialPosition = findPosition(matrizLab, linha, coluna); 
-    if(initStudent(matrizLab, linha, coluna,&qtdChave,initialPosition)) printf("Venceu!") ; 
+    //int *initialPosition = findPosition(matrizLab, linha, coluna); 
+    //if(initStudent(matrizLab, linha, coluna,&qtdChave,initialPosition)) printf("Venceu!") ; 
 
-    liberaLabirinto(matrizLab,linha);
-    
-    fclose(entrada); 
-    
-    // code end  
+    //liberaLabirinto(matrizLab,linha);   
+   
+    // code end 
     
 }
 
