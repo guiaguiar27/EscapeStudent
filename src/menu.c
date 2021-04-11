@@ -1,116 +1,140 @@
-#include "menu.h"
+#include "menu.h" 
+#include "Backtracking.h"
 
 
 
 void menu (){
-    
-    FILE *input;
     int choice=0;
-    char file[30];
+    char file[30]; 
+    char FileWithPath[35] = "../EscapeStudent/data/";
     char extension[10] = ".txt";
     boolean loaded; 
     loaded=F; 
-    int **matrizLab; 
+    int **matrixLab, line , columns ,keys; 
     
     do{
-        system("cls"); 
         printf("\n--- STUDENT MAZZE RUNNER ---\n"); 
-        printf("\t Pick an option: \n");   
-        printf("\t 1 - Load new file. \n");
-        printf("\t 2 - Solve maze and show results. \n");
-        printf("\t\n Anything else to QUIT.  \n");
+        printf("Pick an option: \n");   
+        printf("1 - Load new file. \n");
+        printf("2 - Solve maze and show results. \n");
+        printf("\n Anything else to QUIT.\n");
         scanf("%d",&choice);
 
         switch (choice)
         {
         case 1:
-            system("cls");            
-            printf("\n\t Please, input file name: \n");
+            printf("\nPlease, input file name: \n");
             scanf("%s",file);
-            strcat(file,extension);            
-            input = fopen(file,"r");
-            loadFile(file, input);
-            loaded = T;
-            printf("\n%d",loaded);
+            strcat(file,extension); 
+            strcat(FileWithPath,file); 
+            matrixLab = loadFile(FileWithPath,&line,&columns,&keys);     
+            if(matrixLab != NULL)    
+                loaded = T;
+            
+            #if DEBUG
+                printf("%d\n",loaded);
+                printf("%s\n",file);  
+            #endif 
+            //show_maze(matrixLab,line,columns);
+                    
             break;
             
 
-        case 2:
-            system("cls");
-            printf("\n%d",loaded);
+        case 2: 
+            #if DEBUG 
+                printf("%d\n",loaded);
+            #endif 
             if (loaded){
 
-                //CODIGO BACKTRACKING 
-                //****************************************************************************
-                void initBacktrackingMaze(int **maze, int line, int column, int *keys);  
-                
-                //****************************************************************************
-                break;   
+                initBacktrackingMaze(matrixLab,line,columns,&keys);  
+                 break;   
             }
             else{
-                printf("\n\t Please, first load a valid file \n");
+                printf("\nPlease, first load a valid file \n");
                 printf(" Press anything to continue... \n");
-                system("pause");
                 break;
             }
-           
-            
 
         default:
             break;
         }
-        
-    }while (choice == 1 || choice==2);   
+    }while (choice == 1 || choice==2); 
              
 }
-
-void loadFile (char *file, FILE *input){       
-
-        //Verifica se arquivo é valido
-    if (input == NULL){
-        printf("Cannot open requested file!\n");
-        return;
+int **loadFile(char *file, int *Pline , int *Pcolumn, int *Pkeys ){       
+    int line , column, keys; 
+    char EntireLine[128];  
+    char *source;  
+    int i, j; 
+    FILE *fp = fopen(file, "r");
+    if(fp == NULL) {
+        perror("Unable to open file!");
+        exit(1);
     }
-    else{
-        printf("File Openned!\n");
-    }
-    montaLabirinto(input);
-             
-}
 
-void montaLabirinto(FILE *entrada, int **matrizLab){ //adicionar parametros
-    int linha, coluna, qtdChave;           
-        //Leitura dados labirinto
-    fscanf(entrada,"%d %d %d",&linha,&coluna,&qtdChave);
-
-        // aloca um vetor para linhas
-    matrizLab = malloc (linha * sizeof (int*)) ;
-
-        // aloca cada uma das linhas (vetores de COL inteiros)
-    for (int i=0; i < linha; i++)
-        matrizLab[i] = malloc (coluna * sizeof (int)) ;
-
-    while (!feof(entrada)){
-        // percorre a matriz
-        for (int i=0; i < linha; i++){
-            for (int j=0; j < coluna; j++)
-                fscanf(entrada, "%d",&matrizLab[i][j]); // acesso com sintaxe mais simples
-        }
-    }  
-     
+    fscanf(fp,"%d %d %d",&line, &column,&keys);  
+    printf("%d %d %d \n",line, column,keys); 
+      
+    int ** MatrixLab = (int**)malloc(line*sizeof(int*)) ; 
+    line +=1 ; 
+    for(i=0; i < line ; i++)
+         MatrixLab[i] = (int*)malloc(column*sizeof(int)) ; 
     
-    
-    //liberaLabirinto(matrizLab,linha);   
    
-    // code end 
+   
+    i = 0;  
+    while(fgets(EntireLine, sizeof(EntireLine), fp) != NULL) { 
+        
+        source = EntireLine; 
+        j = 0 ; 
+        while ( *source!= '\0' ) {
+            if(i >=1  && i <= line && j <= column){ 
+                MatrixLab[i][j] = *source - '0'; 
+                }               
+            source++ ; // move p to point to next position
+            j++;  
+
+        } 
+        i++; 
+    } 
+#if DEBUG 
+    for(i = 1; i < line; i++){
+        for ( j = 0; j < column; j++){
+            printf("%d",MatrixLab[i][j]);     
+        } 
+        printf("(%d)\n",i);
+    } 
+#endif 
+
+    fclose(fp); 
+ 
+     
+    *Pline = line; 
+    *Pcolumn =column; 
+    *Pkeys = keys;
     
+    return MatrixLab;            
 }
 
-void liberaLabirinto(int **matrizLab, int linha){     
-            // libera a memória da matriz
-    for (int i=0; i < linha; i++){
-        free (matrizLab[i]) ;
+void freeMaze(int **MatrixLab, int line){     
+    // free matrix maze 
+    for (int i=0; i < line; i++){
+        free (MatrixLab[i]) ;
     }
-    free (matrizLab) ;
+    free (MatrixLab) ;
     getchar();
-} 
+}  
+void show_maze(int **matrixLab, int lines, int columns){   
+    printf("\n----------------------------------------\n"); 
+
+    for(int i = 1; i < lines; i++){
+        for (int j = 0; j < columns; j++){
+            printf(" %d ",matrixLab[i][j]);     
+        } 
+    printf("\n");
+    } 
+    printf("\n----------------------------------------\n");
+      
+
+
+}
