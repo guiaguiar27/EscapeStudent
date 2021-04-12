@@ -10,9 +10,9 @@
 #define True 1 
 #define False 0 
 #define Finished 2  
-#define DEBUG 1
+#define DEBUG 0
 #define ANALYSIS_MODE 1
-#define DEBUG_DOOR 1
+#define DEBUG_DOOR 0
 #define L 3 
 #define R 4  
 #define U 5
@@ -52,7 +52,7 @@ int verify_position(int **maze, int line, int column,  int Tline, int Tcolumn);
 /**   
 * \brief   the main function, adopt backtracking solution  
 **/ 
-int initStudent(int **maze, int line, int column,int *keys, MazePosition *position,  int ** solution, int *count, DoorList *list,int *direction);
+int initStudent(int **maze, int line, int column,int *keys, MazePosition *position,  int ** solution, int *count, DoorList *list,int *direction,int *mov);
 //solution   
 /**   
 * \brief   mark off the position  in the matrix solution 

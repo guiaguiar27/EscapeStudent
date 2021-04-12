@@ -35,8 +35,8 @@ int **initSolution(int line, int column){
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-int initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int  **solution,  int *count, DoorList *Dlist, int *direction){  
-     
+int initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int  **solution,  int *count, DoorList *Dlist, int *direction, int *mov){  
+    (*count)++;   
     MazePosition *current_position = allocate_position(); 
     #if ANALYSIS_MODE
     printf("Called %d times\n",*count);  
@@ -44,7 +44,7 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
     if(position->line == 1){ 
          mark_position_solution(solution, position->line, position->column);  
          printf("Win\n"); 
-         printf("The student moved %d times and reached column %d of the first row",(*count), position->column);
+         printf("The student moved %d times and reached column %d of the first row",(*mov), position->column);
          return True; 
     }        
 
@@ -52,14 +52,13 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
 
     // stop in wall 
     if(verify_position(maze,position->line,position->column,line,column) == True){  
-        (*count)++;  
+        (*mov)++; 
          // solution don't  have this cell   
         
         
         if(verify_solution(solution, position->line, position-> column) == False){   
         
         
-        // in case of the doors 
         // at this point  i have  already guaranted that this cell is free 
          
             
@@ -71,12 +70,13 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
             #endif  
             //show_position(position->line, position->column);    
         
-            //go  up    
+            //go  up     
+            
             if(Move_through_door(maze,position->line,position->column,keys,Dlist) == True){
                 current_position->line = position->line - 1;  
                 current_position->column = position->column;  
                 *direction = U; 
-                if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True;  
+                if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction,mov) == True) return True;  
             }
             // go down     
 
@@ -84,21 +84,21 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
                 current_position->line = position->line + 1;  
                 current_position->column = position->column; 
                 *direction = D; 
-                if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True;
+                if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction,mov) == True) return True;
             }
             // try to right 
             if(Move_through_door(maze,position->line,position->column,keys,Dlist) == True){ 
                 current_position->line = position->line;  
                 current_position->column = position->column +1; 
                 *direction = R;     
-                if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True; 
+                if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction,mov) == True) return True; 
             }
             // try to left 
             if(Move_through_door(maze,position->line,position->column,keys,Dlist) == True){
                 current_position->line = position->line;  
                 current_position->column = position->column - 1; 
                 *direction = L; 
-                if(initStudent(maze,line,column,keys,current_position, solution,count,Dlist,direction) == True) return True; 
+                if(initStudent(maze,line,column,keys,current_position, solution,count,Dlist,direction,mov) == True) return True; 
             }
             markOFF_position_solution(solution, position->line, position->column);
             show_position(position->line, position->column);
@@ -120,6 +120,8 @@ void show_position(int line, int column){
     printf("-------------------\n");
 
 }  
+/*-----------------------------------------------------------------------------------------------------------------------*/
+
 void show_direction(int *dir){ 
     if(*dir == L) printf("Left\n"); 
     else if(*dir == R) printf("Right\n"); 
@@ -146,7 +148,9 @@ int verify_position(int **maze, int line, int column, int Tline, int Tcolumn){
         }            
          return False;  
  
-}  
+}   
+/*-----------------------------------------------------------------------------------------------------------------------*/
+
 int Move_through_door(int **maze, int line, int column, int *keys, DoorList *Dlist){ 
     
     if(maze[line][column] == 3){  
@@ -300,11 +304,12 @@ void initBacktrackingMaze(int **maze, int line, int column, int *keys){
     MazePosition *initialPosition = findPosition(maze, line , column);    
     int **sol = initSolution(line,column);  
     int count = 0 ;  
+    int mov = 0 ;  
     DoorList *Dl;  
     allocate_list(&Dl); 
     int dir = 0; 
-    if(initStudent(maze, line, column, keys,initialPosition,sol,&count,Dl, &dir) == False) 
-        printf("The student moved around %d times and realized that the maze has no way out.",count);       
+    if(initStudent(maze, line, column, keys,initialPosition,sol,&count,Dl, &dir,&mov) == False) 
+        printf("The student moved around %d times and realized that the maze has no way out.",mov);       
     show_solution_maze(sol, line , column); 
 
 }
