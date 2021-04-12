@@ -6,8 +6,11 @@ void main(){
     srand(time(NULL));  
     char maze[20];     
     int index; 
-    int possibilities[3] = {1,2,3};
-    int value, line, column, keys,lim = 50, lim_keys = 10;  
+    int possibilities[3] = {1,2,3}; 
+    
+    int value, line, column, keys,lim = 0, lim_keys = 10;  
+    printf("Entre com o tamanho maximo de linhas e colunas:\n"); 
+    scanf(" %d",&lim);
     line = rand()%lim + 5 ;    
     column = rand()%lim + 5;  
     keys =  rand()%lim_keys + 0;      

@@ -4,7 +4,12 @@
 #define False 0 
 #define Finished 2  
 #define DEBUG 1
-#define ANALYSIS_MODE 1
+#define ANALYSIS_MODE  1
+#define DEBUG_DOOR 0  
+#define L 3 
+#define R 4  
+#define U 5
+#define D 6
 
 typedef struct MazePosition{ 
    int line;  
@@ -37,11 +42,11 @@ void  show_position(int line, int column);
 /**   
 * \brief   
 **/
-int verify_position(int **maze, int line, int column,int *keys, DoorList *list); 
+int verify_position(int **maze, int line, int column,int *keys, DoorList *list, int Tline, int Tcolumn); 
 /**   
 * \brief   
 **/ 
-int initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int *status, int ** solution, int *count, DoorList *list);
+int initStudent(int **maze, int line, int column,int *keys, MazePosition *position,  int ** solution, int *count, DoorList *list,int *direction);
 //solution   
 /**   
 * \brief   
@@ -70,16 +75,16 @@ void initBacktrackingMaze(int **maze, int line, int column, int *keys);
 /**   
 * \brief   
 **/   
-
-DoorList *allocate_list();
+void allocate_list(DoorList **d);
 /**   
 * \brief   
 **/   
 
-int verify_door(DoorList *D , int line , int column);  
+int verify_door(DoorList *Dl , int line , int column);  
 /**   
 * \brief   
 **/   
-
-int insert_door(DoorList *dl, int line, int column); 
-int remove_door(DoorList *dl, int line, int column); 
+void show_direction(int *dir);
+int insert_door(DoorList **dl, int line, int column); 
+int remove_door(DoorList **dl, int line, int column);  
+void show_doors(DoorList **DL);

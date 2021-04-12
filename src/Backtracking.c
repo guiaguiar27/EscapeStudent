@@ -35,76 +35,61 @@ int **initSolution(int line, int column){
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-int initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int *status, int  **solution,  int *count, DoorList *Dlist){  
-    (*count)++;  
+int initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int  **solution,  int *count, DoorList *Dlist, int *direction){  
+    (*count)++;   
+    MazePosition *current_position = allocate_position(); 
     #if ANALYSIS_MODE
     printf("Called %d times\n",*count);  
-    #endif 
-    show_position(position->line, position->column); 
-     
-     if(position->line == 1){ 
-         *status = Finished; 
-         printf("Win\n"); 
-         return True; 
-     }     
-    if(verify_solution(solution, position->line, position->column) == False){  
-         // solution don't  have this cell  
-         
+    #endif  
+    if(position->line == 1){ 
          mark_position_solution(solution, position->line, position->column);  
+         printf("Win\n"); 
+         printf("The student moved %d times and reached column %d of the first row",(*count), position->column);
+         return True; 
+    }     
+    if(verify_position(maze,position->line,position->column,keys,Dlist,line,column) == True){  
+       
+        show_position(position->line, position->column);    
+         // solution don't  have this cell  
+        if(verify_solution(solution, position->line, position->column) == False){   
+        #if DEBUG 
+            show_direction(direction);
+        #endif
+        mark_position_solution(solution,position->line, position->column);  
 
         //go  down 
-        if(verify_position(maze,position->line-1,position->column,keys,Dlist)){ 
-            #if DEBUG 
-                printf("Up\n"); 
-            #endif 
-            position->line -=1;  
-            *status = True;  
-            if(initStudent(maze,line,column,keys,position,status,solution,count,Dlist)) return True;  
-        }    
-        // go up
-    if(position->line + 1 < line){
-        if(verify_position(maze,position->line+1, position->column,keys,Dlist)){  
-                
-                #if DEBUG
-                    printf("Down\n");
-                #endif
-                *status = True;  
-                position->line +=1;  
-                if(initStudent(maze,line,column,keys,position,status,solution,count,Dlist)) return True;
-            }
-        }  
+        current_position->line = position->line - 1;  
+        current_position->column = position->column;  
+        *direction = U; 
+        if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True;  
+        // go up     
+
+
+        current_position->line = position->line + 1;  
+        current_position->column = position->column; 
+        *direction = D; 
+        if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True;
+        
         // try to right 
-    if(position->column+1 < column){ 
-        if(verify_position(maze,position->line, position->column+1, keys,Dlist)){  
-                #if DEBUG 
-                    printf("Right\n"); 
-                #endif
-                *status = True;     
-                position->column += 1;    
-                if(initStudent(maze,line,column,keys,position,status,solution,count,Dlist)) return True; 
-            }
-        }   
+        current_position->line = position->line;  
+        current_position->column = position->column +1; 
+        *direction = R;     
+        if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True; 
+          
         // try to left 
-    if(position->column-1 >= 0){
-        if(verify_position(maze,position->line, position->column-1, keys,Dlist)){  
-            
-                #if DEBUG 
-                    printf("Left\n");
-                #endif
-                *status = True;     
-                position->column -= 1;
-                if(initStudent(maze,line,column,keys,position,status,solution,count,Dlist)) return True;
-            }
+        current_position->line = position->line;  
+        current_position->column = position->column - 1; 
+        *direction = L; 
+        if(initStudent(maze,line,column,keys,current_position, solution,count,Dlist,direction) == True) return True; 
+        
+        markOFF_position_solution(solution, position->line, position->column);
         } 
-        else{ 
-            printf("No way to get out! SAD\n"); 
-            return False; 
-        }  
-        markOFF_position_solution(solution, position->line, position->column);  
-        return False; 
-     } 
+
+        
+     }   
+
     return False; 
-     } 
+    } 
 
 
 
@@ -115,48 +100,62 @@ void show_position(int line, int column){
     printf("  %d       %d   \n",line, column); 
     printf("-------------------\n");
 
-} 
+}  
+void show_direction(int *dir){ 
+    if(*dir == L) printf("Left\n"); 
+    else if(*dir == R) printf("Right\n"); 
+    else if(*dir == U) printf("Up\n"); 
+    else if(*dir == D) printf("Down\n");
+    
+}
 /*-----------------------------------------------------------------------------------------------------------------------*/
-int verify_position(int **maze, int line, int column, int *keys, DoorList *Dlist){ 
-        if(maze[line][column] == 0 || maze[line][column] == 1){ 
-            #if DEBUG  
-                printf("free cell\n"); 
-            #endif 
-            return True; 
-         } 
-         if(maze[line][column] == 2){   
-            #if DEBUG  
-                printf("wall cell\n"); 
-            #endif
-            return False; 
-         } 
-         if(maze[line][column]== 3){  
-             // key recovery must be implemented
-            #if DEBUG  
-                printf("door cell\n"); 
-            #endif   
-
-            if(verify_door(Dlist, line, column) == True){ 
-                if(remove_door(Dlist,line,column) == True)(*keys)++; 
+int verify_position(int **maze, int line, int column, int *keys, DoorList *Dlist, int Tline, int Tcolumn){   
+        // inside,  the number of lines is bigger than the column 
+        if(line < Tline && line >= 1 && column < Tcolumn && column >= 0){ 
+            if(maze[line][column] == 0 || maze[line][column] == 1){ 
                 #if DEBUG  
-                    printf("Door listed, recovery key\n"); 
-
-                #endif
+                    printf("free cell\n"); 
+                #endif 
+                return True; 
             } 
-            else{ 
-                if(*keys>= 1) {   
-                    if(insert_door(Dlist,line,column)){   
-                        (*keys)--;    
-                         #if DEBUG  
-                            printf("Door not listed\n");
-                        #endif
-                        return True;   
-                    }
+            if(maze[line][column] == 2){   
+                #if DEBUG  
+                    printf("wall cell\n"); 
+                #endif
+                return False; 
+            } 
+            if(maze[line][column]== 3){  
+                // key recovery must be implemented
+                #if DEBUG 
+                    printf("door cell\n"); 
+                #endif    
+                #if DEBUG_DOOR 
+                    show_doors(&Dlist);  
+                #endif  
+
+                if(verify_door(Dlist, line, column) == True){ 
+                    if(remove_door(&Dlist,line,column) == True)(*keys)++; 
+                    #if DEBUG_DOOR  
+                        printf("Door listed, recovery key. KEYS = %d\n",(*keys)); 
+                        
+                    #endif
+                } 
+
+                else{ 
+                    if(*keys>= 1) {   
+                            insert_door(&Dlist,line,column); 
+                            (*keys)--;    
+                            #if DEBUG_DOOR  
+                                printf("Door not listed. KEYS = %d\n",(*keys));
+                            #endif
+                            return True;   
+                        
+                    }  
+                    else return False; 
                 }  
-                else return False; 
-            }  
-             
-         } 
+                
+            } 
+        } 
          return False;  
 } 
 /*-------------------------------------------------SOLUTION------------------------------------------------------*/  
@@ -169,7 +168,7 @@ int markOFF_position_solution(int **solution, int line, int column){
 }
 /*-------------------------------------------------------------------------------------------------------*/  
 
-int mark_position_solution(int  **solution, int line, int column){ 
+int mark_position_solution(int **solution, int line, int column){ 
     #if DEBUG 
         printf("Mark position\n"); 
     #endif
@@ -198,79 +197,90 @@ void show_solution_maze(int **solution, int line, int column){
 }  
 /*--------------------------------------------------DOOR-----------------------------------------------------*/  
 
-DoorList *allocate_list(){ 
-    DoorList *d = (DoorList*)malloc(sizeof(DoorList));  
-    d->next = NULL; 
-    return d; 
+void allocate_list(DoorList **d){ 
+    *d = (DoorList*)malloc(sizeof(DoorList));  
+    (*d)->next = NULL;  
+    if(*d == NULL){ 
+        printf("ERROR in door list"); 
+        exit(1);
+    } 
 }
 /*-------------------------------------------------------------------------------------------------------*/  
-int verify_door(DoorList *D , int line , int column){  
-    DoorList *current = D;  
-     #if DEBUG
+int verify_door(DoorList *Dl , int line , int column){  
+    #if DEBUG_DOOR
             printf("DORR SEARCHED %d %d\n",line,column);
-    #endif 
-    while(current != NULL){  
-       
-        if(current->line == line && current->column == column){   
-            #if DEBUG
-                printf("DORR %d %d\n",current->line,current->column);
-            #endif 
-            
-            return True; 
-        } 
-        current = current->next;  
-    } 
+    #endif  
+
+    while(Dl != NULL){ 
+        if(Dl->line == line && Dl->column == column)  
+            return True;             
+        Dl = Dl->next ; 
+    }
     return False; 
 }
 /*-------------------------------------------------------------------------------------------------------*/  
-int insert_door(DoorList *dl, int line, int column){ 
-    // insertion working  
-    DoorList* current = dl;
-    while (current->next != NULL) {
-        current = current->next;
+int insert_door(DoorList **dl, int line, int column){ 
+   
+   DoorList *new_door = malloc(sizeof(DoorList));
+    int success = new_door != NULL;
+
+    if ( success )
+    {
+        new_door->line = line; 
+        new_door->column = column; 
+        new_door->next = NULL;
+        while( *dl != NULL ) dl = &( *dl )->next;
+
+        *dl = new_door; 
     }
-    dl = (DoorList*)malloc(sizeof(DoorList)); 
-    dl->line = line;  
-    dl->column = column;  
-    dl->next = NULL;    
-    return 1; 
-} 
+
+    return success;
+}
 /*-------------------------------------------------------------------------------------------------------*/  
-int remove_door(DoorList *dl, int line, int column){ 
-    DoorList *current = dl;   
+int remove_door(DoorList **dl, int line, int column){  
     DoorList *temp = NULL; 
-    while( current != NULL & current->line != line && current->column != column){ 
-        current = current->next; 
+    while( *dl != NULL & (*dl)->line != line && (*dl)->column!= column){ 
+        dl = &(*dl)->next;  
     }
-    if(current == NULL){ 
-        #if DEBUG 
+    if(*dl == NULL){ 
+        #if DEBUG_DOOR 
             printf("This door doesn't exists!\n"); 
         #endif  
         return False ; 
     }  
 
-    temp = current->next;
-    current->next = temp->next;
+    temp = *dl;
+    *dl = temp->next; 
+    temp->next = NULL ; 
     free(temp); 
 
     return True;  
 
-}
+}  
 
+/*-------------------------------------------------------------------------------------------------------*/ 
+void show_doors(DoorList **DL){ 
+    DoorList * current = *DL;
+    printf("Show doors: \n");
+    while (current != NULL) { 
+        printf("DOOR %d %d\n",current->line,current->column);
+        current = current->next;
+    
+} 
+}
 /*------------------------------------------------DRIVE-------------------------------------------------------*/  
 
 void initBacktrackingMaze(int **maze, int line, int column, int *keys){
     
-    printf("Lines: %d columns: %d keys: %d\n",line,column,*keys);
-    MazePosition *initialPosition = findPosition(maze, line , column);  
-    int pre_status = False;  
+    printf("Lines: %d columns: %d keys: %d\n",line-1,column,*keys);
+    MazePosition *initialPosition = findPosition(maze, line , column);    
     int **sol = initSolution(line,column);  
-    int count = 1 ;  
-    DoorList *Dl = allocate_list();
-    initStudent(maze, line, column, keys,initialPosition,&pre_status,sol,&count,Dl);  
-    #if ANALYSIS_MODE  
-        printf("Called %d times", count);
-    #endif //       
+    int count = 0 ;  
+    DoorList *Dl;  
+    allocate_list(&Dl); 
+    int dir = 0; 
+    if(initStudent(maze, line, column, keys,initialPosition,sol,&count,Dl, &dir) == False) 
+        printf("The student moved around %d times and realized that the maze has no way out.",count);       
     show_solution_maze(sol, line , column); 
 
 }
