@@ -10,9 +10,9 @@
 #define True 1 
 #define False 0 
 #define Finished 2  
-#define DEBUG 0
-#define ANALYSIS_MODE  1
-#define DEBUG_DOOR 0
+#define DEBUG 1
+#define ANALYSIS_MODE 1
+#define DEBUG_DOOR 1
 #define L 3 
 #define R 4  
 #define U 5
@@ -48,7 +48,7 @@ void  show_position(int line, int column);
 /**   
 * \brief   checks if the position is reachable
 **/
-int verify_position(int **maze, int line, int column,int *keys, DoorList *list, int Tline, int Tcolumn); 
+int verify_position(int **maze, int line, int column,  int Tline, int Tcolumn); 
 /**   
 * \brief   the main function, adopt backtracking solution  
 **/ 
@@ -101,4 +101,6 @@ int remove_door(DoorList **dl, int line, int column);
 /**   
 * \brief   show all listed doors
 **/  
-void show_doors(DoorList **DL);
+void show_doors(DoorList **DL); 
+
+int Move_through_door(int **maze, int line, int column, int *keys, DoorList *Dlist); 
