@@ -24,6 +24,8 @@ void menu (){
         {
         case 1:
             printf("\nPlease, input file name: \n");
+            file[0] = '\0';
+            FileWithPath[22] = '\0';
             scanf("%s",file);
             strcat(file,extension); 
             strcat(FileWithPath,file); 
@@ -69,7 +71,7 @@ int **loadFile(char *file, int *Pline , int *Pcolumn, int *Pkeys ){
     FILE *fp = fopen(file, "r");
     if(fp == NULL) {
         perror("Unable to open file!");
-        exit(1);
+        return NULL;
     }
 
     fscanf(fp,"%d %d %d",&line, &column,&keys);  
@@ -134,8 +136,7 @@ void show_maze(int **matrixLab, int lines, int columns){
         } 
     printf("\n");
     } 
-    printf("\n----------------------------------------\n");
-      
+    printf("\n----------------------------------------\n");    
 
 
 }
