@@ -10,9 +10,9 @@
 #define True 1 
 #define False 0 
 #define Finished 2  
-#define DEBUG 1
+#define DEBUG 0
 #define ANALYSIS_MODE  1
-#define DEBUG_DOOR 0  
+#define DEBUG_DOOR 0
 #define L 3 
 #define R 4  
 #define U 5

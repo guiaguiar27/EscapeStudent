@@ -36,7 +36,7 @@ int **initSolution(int line, int column){
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 int initStudent(int **maze, int line, int column,int *keys, MazePosition *position, int  **solution,  int *count, DoorList *Dlist, int *direction){  
-    (*count)++;   
+     
     MazePosition *current_position = allocate_position(); 
     #if ANALYSIS_MODE
     printf("Called %d times\n",*count);  
@@ -48,7 +48,7 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
          return True; 
     }     
     if(verify_position(maze,position->line,position->column,keys,Dlist,line,column) == True){  
-       
+        (*count)++;  
         show_position(position->line, position->column);    
          // solution don't  have this cell  
         if(verify_solution(solution, position->line, position->column) == False){   
@@ -57,12 +57,13 @@ int initStudent(int **maze, int line, int column,int *keys, MazePosition *positi
         #endif
         mark_position_solution(solution,position->line, position->column);  
 
-        //go  down 
+        //go  up   
         current_position->line = position->line - 1;  
         current_position->column = position->column;  
         *direction = U; 
         if(initStudent(maze,line,column,keys,current_position,solution,count,Dlist,direction) == True) return True;  
-        // go up     
+       
+        // go down     
 
 
         current_position->line = position->line + 1;  
@@ -132,13 +133,14 @@ int verify_position(int **maze, int line, int column, int *keys, DoorList *Dlist
                 #if DEBUG_DOOR 
                     show_doors(&Dlist);  
                 #endif  
-
+                // doc 
                 if(verify_door(Dlist, line, column) == True){ 
                     if(remove_door(&Dlist,line,column) == True)(*keys)++; 
                     #if DEBUG_DOOR  
                         printf("Door listed, recovery key. KEYS = %d\n",(*keys)); 
                         
-                    #endif
+                    #endif 
+                    //return True; 
                 } 
 
                 else{ 
@@ -156,8 +158,13 @@ int verify_position(int **maze, int line, int column, int *keys, DoorList *Dlist
                 
             } 
         } 
+        // doc 
          return False;  
-} 
+}  
+// int verify_position_is_door(int **maze, int line, int column, int *keys, DoorList *Dlist){ 
+
+
+// }
 /*-------------------------------------------------SOLUTION------------------------------------------------------*/  
 int markOFF_position_solution(int **solution, int line, int column){ 
     #if DEBUG 
@@ -187,7 +194,7 @@ int verify_solution(int **solution, int line, int column){
 /*-------------------------------------------------------------------------------------------------------*/  
 void show_solution_maze(int **solution, int line, int column){  
     printf("\n----------------------------------------\n");
-    for(int i = 0; i < line; i++){
+    for(int i = 1; i < line; i++){
         for (int j = 0; j < column; j++){
             printf(" %d ",solution[i][j]);     
         } 

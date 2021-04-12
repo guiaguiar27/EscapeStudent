@@ -75,6 +75,7 @@ int **loadFile(char *file, int *Pline , int *Pcolumn, int *Pkeys ){
     fscanf(fp,"%d %d %d",&line, &column,&keys);  
     printf("%d %d %d \n",line, column,keys); 
       
+    // doc  
     int ** MatrixLab = (int**)malloc(line*sizeof(int*)) ; 
     line +=1 ; 
     for(i=0; i < line ; i++)
