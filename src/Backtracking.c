@@ -311,7 +311,10 @@ void initBacktrackingMaze(int **maze, int line, int column, int *keys){
     int dir = 0; 
     if(moveStudent(maze, line, column, keys,initialPosition,sol,&count,Dl, &dir,&mov) == False) 
         printf("The student moved around %d times and realized that the maze has no way out.",mov);       
-    show_solution_maze(sol, line , column); 
+    
+    #if DEBUG 
+        show_solution_maze(sol, line , column); 
+    #endif 
 
 }
 
