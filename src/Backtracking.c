@@ -38,13 +38,16 @@ int **initSolution(int line, int column){
 int moveStudent(int **maze, int line, int column,int *keys, MazePosition *position, int  **solution,  int *count, DoorList *Dlist, int *direction, int *mov){  
     (*count)++;   
     MazePosition *next_position = allocate_position(); 
-    #if ANALYSIS_MODE
-    printf("Called %d times\n",*count);  
+    #if DEBUG
+        printf("Called %d times\n",*count);  
     #endif  
     if(position->line == 1){ 
          mark_position_solution(solution, position->line, position->column);  
-         printf("Win\n"); 
-         printf("The student moved %d times and reached column %d of the first row",(*mov), position->column);
+         printf("Win\n");   
+
+        printf("---------------------------------------------------------------------------------------\n"); 
+        printf("The student moved %d times and reached column %d of the first row\n",(*mov), position->column); 
+        printf("---------------------------------------------------------------------------------------\n"); 
          return True; 
     }        
 
@@ -309,9 +312,19 @@ void initBacktrackingMaze(int **maze, int line, int column, int *keys){
     DoorList *Dl;  
     allocate_list(&Dl); 
     int dir = 0; 
-    if(moveStudent(maze, line, column, keys,initialPosition,sol,&count,Dl, &dir,&mov) == False) 
-        printf("The student moved around %d times and realized that the maze has no way out.",mov);       
-    
+    if(moveStudent(maze, line, column, keys,initialPosition,sol,&count,Dl, &dir,&mov) == False) {
+        printf("---------------------------------------------------------------------------------------\n"); 
+        printf("The student moved around %d times and realized that the maze has no way out.\n",mov);       
+        printf("---------------------------------------------------------------------------------------\n"); 
+    }
+    #if ANALYSIS_MODE  
+
+        printf("---------------------------------------------------------------------------------------\n"); 
+        printf("Total recursive call was %d\n",count);  
+        printf("---------------------------------------------------------------------------------------\n"); 
+    #endif  
+
+
     #if DEBUG 
         show_solution_maze(sol, line , column); 
     #endif 
