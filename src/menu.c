@@ -1,5 +1,6 @@
 #include "menu.h" 
 #include "Backtracking.h"
+#include <conio.h>
 
 
 
@@ -23,6 +24,7 @@ void menu (){
         switch (choice)
         {
         case 1:
+            system("cls");
             printf("\nPlease, input file name: \n");
             file[0] = '\0';
             FileWithPath[22] = '\0';
@@ -43,6 +45,7 @@ void menu (){
             
 
         case 2: 
+            system("cls");
             #if DEBUG 
                 printf("%d\n",loaded);
             #endif 
