@@ -52,7 +52,7 @@ int verify_position(int **maze, int line, int column,  int Tline, int Tcolumn);
 /**   
 * \brief   the main function, adopt backtracking solution  
 **/ 
-int initStudent(int **maze, int line, int column,int *keys, MazePosition *position,  int ** solution, int *count, DoorList *list,int *direction,int *mov);
+int moveStudent(int **maze, int line, int column,int *keys, MazePosition *position,  int ** solution, int *count, DoorList *list,int *direction,int *mov);
 //solution   
 /**   
 * \brief   mark off the position  in the matrix solution 
